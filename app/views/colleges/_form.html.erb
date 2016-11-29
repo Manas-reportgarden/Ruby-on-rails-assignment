@@ -1,0 +1,27 @@
+<%= form_for(college) do |f| %>
+  <% if college.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(college.errors.count, "error") %> prohibited this college from being saved:</h2>
+
+      <ul>
+      <% college.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :name %>
+    <%= f.text_area :name %>
+  </div>
+
+  <div class="field">
+    <%= f.label :established_year %>
+    <%= f.number_field :established_year %>
+  </div>
+
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

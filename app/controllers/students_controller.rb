@@ -61,6 +61,61 @@ class StudentsController < ApplicationController
     end
   end
 
+  def filter
+    puts params[:s]
+    puts "hello"
+    students = Student.all
+    @dis_arr = params[:d].split(",")
+    new_students = []
+    @test1 = students.group_by  {|x| x[params[:q]] }
+    @dis_arr.insert(0, 'student_id')
+    puts @test1
+    print "\n"
+    if params[:sc] != 'true'
+    @test1.each do |key,value|
+      value.each do |k,v|
+      new_students << k if k['year'] == params[:y].to_i
+      end 
+     
+    end
+    @test1 =  new_students.sort_by{|x| x[params[:s]]}.reverse
+    
+    @dis_arr.each do |x|
+      print "#{x}\t\t\t"
+    end
+    puts "\n"
+    @test1.each do |key,value|
+      @dis_arr.each do|x|
+         print "#{key[x]}\t\t\t"
+      end
+    puts "\n"
+    end
+    else
+    @test1.each do |key,value|
+       @test1[key] = value.sort_by{ |x| x[params[:s]]}.reverse
+   
+    end
+    puts @test1
+    print "\n"
+    # puts "\n--------------------------Example 2-----------------------------------------"
+    @dis_arr.push('year')
+    @dis_arr.insert(0, 'student_id')
+    @dis_arr.each do |x|
+      print "#{x}\t\t\t"
+    end
+    print "\n"
+    @test1.each do |key, value|
+      value.each do |k,v|
+        @dis_arr.each do |x|
+          print "#{k[x]}\t\t\t" 
+        end
+        puts "\n" 
+      end
+      
+      end
+  end
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_student

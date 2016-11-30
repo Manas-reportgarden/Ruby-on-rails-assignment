@@ -4,7 +4,8 @@ class CollegesController < ApplicationController
   # GET /colleges
   # GET /colleges.json
   def index
-    @colleges = College.all
+    @colleges = College.search(params[:search])
+    puts @colleges.name
   end
 
   # GET /colleges/1

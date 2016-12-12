@@ -1,6 +1,6 @@
 class StudentsController < ApplicationController
   before_action :set_student, only: [:show, :edit, :update, :destroy]
-
+  COMPARE_KEYS_MARKS = ['maths', 'physics', 'chemistry']
   # GET /students
   # GET /students.json
   def index
@@ -62,58 +62,15 @@ class StudentsController < ApplicationController
   end
 
   def filter
-    puts params[:s]
-    puts "hello"
     students = Student.all
-    @dis_arr = params[:d].split(",")
-    new_students = []
-    @test1 = students.group_by  {|x| x[params[:q]] }
-    @dis_arr.insert(0, 'student_id')
-    puts @test1
-    print "\n"
-    if params[:sc] != 'true'
-    @test1.each do |key,value|
-      value.each do |k,v|
-      new_students << k if k['year'] == params[:y].to_i
-      end 
-     
-    end
-    @test1 =  new_students.sort_by{|x| x[params[:s]]}.reverse
     
-    @dis_arr.each do |x|
-      print "#{x}\t\t\t"
-    end
-    puts "\n"
-    @test1.each do |key,value|
-      @dis_arr.each do|x|
-         print "#{key[x]}\t\t\t"
-      end
-    puts "\n"
-    end
-    else
-    @test1.each do |key,value|
-       @test1[key] = value.sort_by{ |x| x[params[:s]]}.reverse
-   
-    end
-    puts @test1
-    print "\n"
-    # puts "\n--------------------------Example 2-----------------------------------------"
-    @dis_arr.push('year')
-    @dis_arr.insert(0, 'student_id')
-    @dis_arr.each do |x|
-      print "#{x}\t\t\t"
-    end
-    print "\n"
-    @test1.each do |key, value|
-      value.each do |k,v|
-        @dis_arr.each do |x|
-          print "#{k[x]}\t\t\t" 
-        end
-        puts "\n" 
-      end
-      
-      end
-  end
+    @dis_arr = params[:input_display_arr].split(",")
+    @dis_arr.insert(0, 'student_id') if @dis_arr.first != 'student_id'
+    @dis_arr.push(params[:input_group_by]) if !@dis_arr.include? params[:input_group_by]
+    @total_marks = []
+    @change_marks = [] 
+    @students = [] 
+    @stud = Student.compute(params,@total_marks,@change_marks, @students, @dis_arr)
   end
 
   private
@@ -126,4 +83,5 @@ class StudentsController < ApplicationController
     def student_params
       params.require(:student).permit(:student_id, :department, :maths, :physics, :chemistry, :year, :college_id)
     end
+
 end

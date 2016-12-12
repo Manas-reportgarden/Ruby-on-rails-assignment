@@ -2,78 +2,68 @@
 
 <table>
   <thead>
-  <% @dis_arr.each do |x|%>
-  	<th><%= x.capitalize %></th>
-  	<% end %>
+    <% @dis_arr.each do |x|%>
+    <th><%= x.capitalize %></th>
+    <% end %>
   </thead>
 
   <tbody>
-  	<% if params[:sc] == 'true' %>
-    <% @test1.each do |key,value| %>
-    <% value.each do |k,v| %>
-      <tr>
-     <% @dis_arr.each do|x| %>
-        <td><%= k[x] %></td>
-     <% end %>
-     </tr>
-     <% end %>
-     <tr>
-     <td>Change</td>
-     <% if @dis_arr.include? 'maths'%>
-     <td><%= if value[1].nil? 
-        ((value[0]['maths']).abs*100)/value[0]['maths'] 
-      else 
-        ((value[0]['maths']-value[1]['maths']).abs*100)/value[0]['maths']
-      end%></td>
-      <% end %>
-      <% if @dis_arr.include? 'physics'%>
-      <td><%= if value[1].nil? 
-        ((value[0]['physics']).abs*100)/value[0]['physics'] 
-      else 
-        ((value[0]['physics']-value[1]['physics']).abs*100)/value[0]['physics']
-      end%></td>
-      <% end %>
-      <% if @dis_arr.include? 'physics'%>
-      <td>
-      <%= if value[1].nil? 
-        ((value[0]['chemistry']).abs*100)/value[0]['chemistry'] 
-      else 
-        ((value[0]['chemistry']-value[1]['chemistry']).abs*100)/value[0]['chemistry']
-      end%>
-      </td>
-      <% end %>
-     </tr>
-     <% if params[:t] == 'true' %>
-     <tr>
-     <td>Total</td>
-     <td><%= if value[1].nil? 
-        value[0]['maths']
-      else 
-        value[0]['maths']+value[1]['maths']
-      end %></td>
-      <td><%= if value[1].nil? 
-        value[0]['physics']
-      else 
-        value[0]['physics']+value[1]['physics']
-      end %></td>
-      <td>
-      <%= if value[1].nil? 
-        value[0]['chemistry']
-      else 
-        value[0]['chemistry']+value[1]['chemistry']
-      end %>
-      </td>
-     </tr>
-     <% end %>
+    <% @stud.each do |key,value| %>
+    <tr>
+    <% value.each do |k,v|%>
+        <% @dis_arr.each do |x|%>
+          <td><%= k[x] %></td>
+        <% end %>
+
+    </tr>
+
     <% end %>
-    <%else%>
-    	<% @test1.each do |key,value| %>
-    	<tr>
-    		<% @dis_arr.each do|x| %>
-		        <td><%= key[x] %></td>
-		    <% end %>
-    	</tr>
-    <% end %>
-    <% end %>
+      <% if params[:should_compare] == 'true'  && params[:input_group_by] == 'student_id'
+        compare_year1 = nil
+        compare_year2 = nil
+        for i in 0...value.length
+          compare_year1 = value[i] if value[i]['year']  == params[:year_1].to_i && !value[i].nil?
+          compare_year2 = value[i] if value[i]['year'] == params[:year_2].to_i && !value[i].nil?
+        end
+      %>
+        <tr>
+        <td>Change</td>
+        <%
+          @dis_arr.each do |x|
+              compare_marks = 0
+              compare_marks = (compare_marks-compare_year1[x]).abs if !compare_year1.nil?
+              compare_marks = (compare_marks-compare_year2[x]).abs if !compare_year2.nil?              
+        %>
+        <% if Student::COMPARE_KEYS_MARKS.include? x%>
+          <td><%= compare_marks %></td>
+        <% end %>
+        <% end %>
+        </tr>
+      <% end %>   
+
+      <%
+        if params[:should_total] == 'true' %>
+        <tr>
+        <td>Total</td>
+        <% @dis_arr.each do |y|
+          marks_total = 0
+          if Student::COMPARE_KEYS_MARKS.include? y
+            value.collect do |x|
+              marks_total = marks_total + x[y]
+            end %>
+        <td><%= marks_total %></td>
+          <% end
+          
+        end %>
+        </tr>
+       
+      <%end 
+
+      %>
+
+
+
+    <% end%>
   </tbody>
+  	
 </table>
